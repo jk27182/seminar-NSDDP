@@ -1,0 +1,12 @@
+\section{State of the art} \label{State of the art}
+The following sections will describe techniques that are considered state-of-the-art in the literature. 
+The main goal of these techniques is to solve the curse of dimensionality by applying a approximation to the value function.
+According to \cite{POWELL2019795}, there are four major classes to deal with the three realizations of the curse of dimensionality, using an approximation of the value function to cope with the computational complexity of stochastic multistage optimization problem is only one of these four main approaches. \\
+Further approaches include policy function approximation, for instance using a heuristic to obtain a decision, cost-function approximations and using look-ahead policies \cite{POWELL2019795}. 
+Powell classifies the approaches from the stochastic programming community under lookahead-policies \cite{POWELL2019795}. \\
+This solidifies the statement that the approaches from stochastic programming can be classified under the ADP framework. \\
+The focus in the remainder of this paper is on methods that approximate the expected value of the value functions.
+In order to stay in the framework of the stochastic programming community, the focus in the remainder of this paper will be on the L-shaped method and stochastic dual dynamic programming, however the general idea of approximate dynamic programming will be presented.
+\input{State_of_the_Art/Approximate Dynamic Programming}
+\input{State_of_the_Art/BendersDecomposition}
+\input{State_of_the_Art/SDDP}

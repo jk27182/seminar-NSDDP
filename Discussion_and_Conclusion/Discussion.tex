@@ -1,0 +1,28 @@
+\section{Discussion}\label{Discussion}
+As the previous sections demonstrated, the NSDDP is a valid approach to improve computation time for stochastic programs.
+
+HIER FEHLT EIN SATZ
+
+One complicating factor in my experiments was the lack of data, in a real world context that data would obviously be provided.
+
+The major drawback from the NSDDP approach is that this method does not guarantees, that a lower bound to the value function is computed.
+That can lead, as seen in my experiments, to infeasible problems that otherwise would be feasible. \\
+Furthermore, the approach stands and falls with the representation of the problem.
+The smaller the problem can be represented, i.e. the fewer parameters are needed for the description, the more difficult it is to predict cutting planes reliably. \\
+For example, if in a large problem description only one parameter varies, that however affects multiple constraints in a different way, either a complex representation of that behaviour has to be defined or the NSDDP approach most likely cannot be applied, as the predictive power of just would be too small to predict multiple optimality cuts.
+
+As seen in my experiments, the number of cuts was limited by the number of parameters and this constraint becomes harder to fulfill, the larger the space of the decision variables becomes.
+A disadvantage that exactly this approach wanted to solve.
+With a look at practical applications, where decision variables are usually high-dimensional, this is a major downside of this approach.
+Furthermore, the current approach requires that the representation of the problem instance is passed as a vector, which may not be able to transfer the information about structural dependencies of the specific problem instance.
+
+Subsequent research could explore how, for example, convolutional neural networks could be used to extract structural information.
+Convolutional neural network are mainly used in computer vision, as they learn a representation of pictures, which are just matrices with the color values as entries (matrix only two-dimensional for grayscale images), also known as featuremaps \cite{ComputerVisionBook} which are then passed to a regular MLP.
+This could possibly augment the NSDDP approach. \\
+This could be especially interesting for problems were the problem structure allows for the application of decomposition techniques from the field of large-scale optimization, that would be overlooked in a vector representation.
+
+Besides the aforementioned downsides, the NSDDP approach can lead to major speed improvements in the computation time that could be continuously improved as more data naturally becomes available.
+However to exploit the new data, the model has to be retrained which could take a long time and a lot of ressources, depending on model size. \\
+Moreover, subsequent research could explore how well the the fast-inference SDDP approach from \cite{NSDDP} works and if similiar problems regarding infeasibility arise.
+Furthermore, it could be researched how concepts like transfer learning could be Incorporated into this approach so that this approach is not limited to the specific family of problems that it is trained on. \\
+Especially looking at real world applications, where problem instances would be larger and the neural network more complicated, hence training and retraining the neural network would require a lot of resources, this could be used to reduce the resource requirements.

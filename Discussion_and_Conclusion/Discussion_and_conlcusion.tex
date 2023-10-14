@@ -1,0 +1,46 @@
+\section{Discussion and Conclusion}\label{Discussion and conlcusion}
+In this section the results from my experiments are discussed and an outlook to possible further research topics is given based on my observations.
+Finally, the seminar paper and its insights will be summarized.
+\subsection{Discussion}\label{Discussion}
+As the previous sections showed, the NSDDP is a valid approach to improve computation time for stochastic programs.
+While the approach of using structures like neural networks to compute value function approximations is not particularly new, similar approaches for value function approximation where already presented in 1999 in \cite{Neuro-dynamic-programming}, the approach of using a meta machine learning approach that incorporates information about the problem structure is novel.
+A further novel addition is the use of the earth-movers distance in the loss function instead of the usual squared, euclidean distance. \\
+As shown in my experiments in section \ref{Own_computations}, the approach can lead to major speed-ups in the computation time. \\
+The paper provided two methods to obtain faster computation times, the $v$-SDDP approach and the fast-inference SDDP approach. \\
+The fast-inference SDDP approach was not further investigated in this seminar paper, however it is clear from the structure of this approach that it needs almost the same effort, if not more, than the NSDDP approach to set up, since it also required the training of a neural network and the additional training of a projection matrix $G$. \\
+Furthermore, it is not clear how well the projection will generally work in practice.
+The approach uses principal component analysis to calculate the projection matrix, however it can not be guaranteed that the point $x = G^Ty$ is feasible for the unprojected problem.
+
+The major drawback from the NSDDP approach is that this method does not guarantee that a lower bound to the value function is computed.
+That can lead, as seen in my experiments, to unsolvable problems that otherwise would be solvable.  \\
+Furthermore, the approach stands and falls with the representation of the problem.
+The smaller the representation of the problem, i.e. the fewer parameters are needed for the description, the more difficult it is to predict cutting planes reliably, as described in section \ref{Own_computations}.  \\
+For example, if in a large problem description only one parameter varies, that however affects multiple constraints in a different way, either a complex representation of that behavior has to be defined or the NSDDP approach most likely cannot be applied, as the predictive power of just one parameter would be too small to predict multiple optimality cuts. \\
+As seen in my experiments, the number of cuts was limited by the number of parameters and this constraint becomes harder to fulfill, the larger the space of the decision variables becomes and the smaller the representation of the problem instance is.
+A disadvantage that exactly this approach wanted to solve.
+With a look at practical applications, where decision variables are usually high-dimensional, this is a major downside of this approach. \\
+Furthermore, the current approach requires that the representation of the problem instance is passed as a vector, which may not be able to transfer the information about structural dependencies of the specific problem instance.
+
+Subsequent research could explore how, for example, convolutional neural networks could be used to extract structural information.
+Convolutional neural network are mainly used in computer vision, as they learn a representation of pictures, which are just matrices with the respective color values as entries, also known as featuremaps \cite{ComputerVisionBook} which are then passed to a regular MLP.
+This could possibly augment the NSDDP approach. \\
+This could be especially interesting for problems were the problem structure allows for the application of decomposition techniques from the field of large-scale optimization, that would be overlooked in a vector representation.
+
+Besides the aforementioned downsides, the NSDDP approach can lead to major computation time reductions that could be continuously improved, as more data naturally becomes available.
+However, to exploit the new data, the model has to be retrained, which could take a long time and a lot of resources, depending on the model size. \\
+Moreover, subsequent research could explore how well the fast-inference SDDP approach from \cite{NSDDP} works and if similar problems regarding infeasibility arise. \\
+Furthermore, it could be researched how concepts like transfer learning could be incorporated into this approach so that this approach is not limited to the specific family of problems that it is trained on. \\
+Especially looking at real world applications, where problem instances would be larger and the neural network more complicated, hence training and retraining the neural network would require a lot of resources, this could be used to reduce the resource requirements.
+
+\subsection{Conclusion}\label{Conclusion}
+This seminar paper presented an overview of the field stochastic optimization, what frameworks exist and what advantages and disadvantages each framework provides.
+The current state-of-the-art algorithms were presented and the advantages and disadvantages were discussed. \\
+The main disadvantage that was common for all but one approach, was the bad scalability for larger problems with more stages.
+The stochastic dual dynamic programming algorithm was able to solve this shortcoming by sampling the scenario tree.
+However, even this approach suffered from bad scalability as the number of necessary iteration for SDDP increased exponentially with the dimension of the decision variables. \\
+The neural stochastic dual dynamic programming approach tries to solve these shortcomings by predicting optimality cuts based on a representation of the problem instance with a meta-machine learning model, which can be used as a warm start for the SDDP algorithm. \\
+Furthermore, a projection to a low-dimensional representation of the problem can be provided, which can be solved faster and can be used to generate feasible points. \\
+A potential application of NSDDP was presented with the unit commitment problem and the potential as well as the constraints of NSDDP for this particular application were highlighted. \\
+Own Experiments were provided, which showcased that a speed-up of $30-40\%$ on average on the news-vendor problem can be achieved.
+However, also the disadvantages were showcased, which were the reliability on the representation of the problem instance and that the NSDDP approach does not guarantee to create only lower bounds on the value function approximation. \\
+In further research, it could be studied if approaches from computer vision are applicable to extract meaningful representations of the problem instances.
