@@ -1,0 +1,14 @@
+# Overview
+Code written using Tensorflow 2.0, JAX, FLAX and Python 3.0.
+
+# File Structure
+* [sddp_agent_main.py] (Main SDDP trainer file.)
+* [sddp_agent.py] (SDDP algorithm.)
+* [sddp_env.py] (Create application-specific problem formulation for SDDP.)
+* [canonical_lp_converters.py] (Util functions for converting two case studies -- inventory and portfolio optimization to standard SDDP formulation.)
+* [time_series_generator.py] (Util functions for time-series and scenario generation.)
+* [stock_preprocess.ipynb] (Stock preprocessing colab.)
+* [./piecewise_nn] (Neural network design dir.)
+  - [cond_piecewise_nn.py] (Neural network that generates piecewise linear functions)
+  - [ot_metrics.py] (Optimal transport objective for learning)
+  - [main_nn.py] (Main demonstration of the usage of the neural networks)

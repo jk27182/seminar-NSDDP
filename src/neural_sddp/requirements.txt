@@ -1,0 +1,8 @@
+tensorflow
+jax
+jaxlib
+flax
+numpy
+networkx
+tqdm
+scipy
