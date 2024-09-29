@@ -1,0 +1,94 @@
+\section{State of the art}
+A common problem of the presented methods is the poor scalability to large problems. The reason for this usually lies in the complexity of the computation of the value function. For an exact computation, in general, every state of the state space must be visited, a quantity which grows exponentially with the number of stages. If the problem is also a stochastic one, the number of possible realizations further increases the problem. The problem can be well illustrated by the following example.
+Assuming a quantity of five components, i.e. , length states from the interval are possible for each component. The process is subject to certain uncertainties, such as inaccuracies in the measurement as well as in the manufacturing processes. This uncertainty is modeled with a normally distributed random variable. Now assume that the state space can be approximated with 20 points, for example with a Monte Carlo simulation, and the random variable is discretized with 15 possible events. This leads to a total of possible states, which would all have to be iterated through, if one wanted to solve the problem with classical dynamic optimization. Thus, even apparently small problems can no longer be solved in a reasonable time. Due to this fact, dynamic optimization had the reputation of being useless for most engineering applications (Powell 2016). Nevertheless, dynamic optimization has been used to solve highly complex problems, such as the fleet management of a trucking company with over 5000 drivers and 20 time steps (Simão et al. 2009). The solution was made possible by Approximate Dynamic Programming, also known as ADP. It is a framework for modeling and solving sequential decision problems that are too complex to obtain an exact solution through the classical methods of dynamic optimization. (Powell 2011, pp. 111-112)
+The basic algorithmic approach is based on forward iterations in time, also called forward dynamic programming or forward iteration in the following. In the classical solution procedures of dynamic optimization problems, the time steps are performed backwards, i.e. starting in the temporally last time period up to the temporally first time period, in order to solve the Bellman equation by means of backward recursion. In classical dynamic optimization, the decisions are implicitly determined by computing the value functions, but these are generally still unknown in forward iteration. Thus, in order to realize forward iteration, an approximation of the value function must be found to solve the Bellman equation, motivating the name "Approximate Dynamic Programming". 
+Assuming at an iteration and a time of forward iteration the system is in a state . Then formula 4 .16 can be used in the optimization problem according to Powell 2011, p. 120.
+
+
+
+formula 4.25
+
+can be transformed. Here . denotes the approximation of the value function of the state in iteration . The approximation is then improved using iteratively, for example according to Powell 2011, p. 127 via the prescription
+
+
+
+Formula 4.26
+
+where is an iteration-dependent step size. An (approximate) decision can then be made according to
+
+Formula 4.27
+
+can be taken (Powell 2016). The choice of a good step size is essential for a good approximation, for a comprehensive overview of different possibilities for the
+step size calculation, please refer to George & Powell 2006. 
+Equation Formula 4 .27 is calculated only once per step and accordingly for only one state per step. The transition from a state in the step or in time to a state is determined using the transition function, assuming that such a function is known. For a forward iteration implementation, the stochastic exogenous information process of the transition function is modeled by drawing a sample of the corresponding random variables in each stage. The sequence of realizations of these samples is also called the sample path. 
+Thus, the scaling problem of the decision tree structure is solved by not searching the entire decision tree, but by iteratively exploring individual paths of the decision tree through simulation and then using them to make an approximation. Here, a trade-off between exploration of unknown paths and exploitation of already visited, and thus already evaluated, paths has to be considered. For example, if for the solution of a minimization problem with steps the value function of each state is initialized with the value infinite, after the first iteration exactly states will have a value function, which was updated according to formula 4 .26 and is evaluated with a smaller value than infinite. At the next iteration, these states will then be preferred, which means that although the value function approximation of these states will become more accurate as the costs incurred can be observed more often, the costs of other paths will remain unknown. Thus, a lower cost path may be overlooked. In turn, if the value functions are all initialized with the value zero, an exploration strategy is encouraged, since after one iteration all those states are preferred which have not yet received an update of their value function approximation. This will not miss any path, but for certain states the value function approximation will be too bad, because the states have been visited too seldom. (Boucherie & Dijk 2017, p. 97)
+One way to find a trade-off for this trade-off is the so-called. 
+-Greedy strategy. Here, a random decision, instead of the decision calculated according to formula 4 .27, is chosen with a probability of . Thus, by visiting the states more frequently, better value function approximations can be computed without sacrificing exploration of the decision tree. (Boucherie & Dijk 2017, pp. 75-76)
+To make a decision according to Formula 4 .27, the value function approximation via the equations Formula 4 .25 and Formula 4 .26 is one of four general ways to make approximate decisions. According to Powell 2014, the four different approaches are divided into the following classes. 
+Strategy function approximations. 
+In this class, strategies are approximated for decision making by an analytic function that does not involve an inherent optimization problem. For example, such a strategy can be realized by a rule base, such as simple if-then rules, for example, a lookup table which contains rules of the type 
+
+IF state = s THEN action= a
+
+are included. Expert systems, for example, would also fall into this class. Another possibility is the parametric representation of the strategy approximation by a function depending on a parameter vector . For example, such a function might take the form
+
+
+
+formula 4.28
+
+. The difficulty of this approach obviously lies in the choice of a good parameter , since this has the decisive influence on goodness of decision making. In this type of decision making, there is a trade-off between the simplicity of this method and parameter tuning. (Powell 2014)
+Approximation of the cost function 
+Another way to generate strategies can be realized by modifying the cost function in the Bellman equation. For example, a simple strategy can be generated using
+
+
+
+Formula 4.29
+
+can be generated by neglecting the value function. The approach in formula 4 .29 is thereby also called myopic or myopic strategy. Good, though rarely optimal, strategies can be generated in this way. This can be extended by the introduction of a parameter, so that further modifications, for example
+
+
+
+Formula 4.30
+
+are possible. The set consists of so-called basis functions which span a function space. They can be of form, for example. In the case of the cost function approximation, however, it is not a "real" approximation of the value function, but only a correction term, which does not try to take into account future costs from a state. For this reason, it only makes sense in this case to use only basis functions that are dependent on the decision. (Powell 2014)
+Approximation of the value function
+This class is about the calculation of strategies based on an approximation of the optimal value function . An exact evaluation of the value function term often fails already at the calculation of the expected value, since this can usually no longer be evaluated in a reasonable time for multidimensional random variables, for example.
+The decisions are solved likewise with the help of the Bellman equation, only that here an approximation of the value function is used, designated with , whereby the decisions from the problem 
+
+
+
+formula 4.31
+
+can be obtained. In general, value function approximations involve the use of statistical methods to estimate the value of a state (Boucherie & Dijk 2017, pp. 64-100). According to Boucherie & Dijk 2017, pp. 64-100, value function approximations can be divided into (i) lookup, (ii) parametric, and (iii) non-parametric value function approximations. 
+For example, in lookup table approximations, the state space is reduced in size by dividing it into appropriate smaller clusters and computing the value function for these clusters. In a parametric value function approximation, the approximation depends on a parameter, so it can be determined with a suitable parametric structure, such as an artificial neural network or by the basis functions already introduced (Bertsekas & Tsitsiklis 1996, pp. 60-72). By the basis functions a function space is spanned, whereby it is tried to represent the optimal value function as well as possible by a linear combination, depending on the parameter. The individual basis functions can be regarded as a set of characteristics, which can describe the characteristics of the genuine value function well. In the context of regression, the basis functions correspond to the explanatory variables. Non-parametric approximation includes methods where the model structure is not specified by a parameter, such as support vector machines. (Boucherie & Dijk 2017, pp. 64-100)
+Anticipatory strategies
+Another way to generate decisions is to optimize over a horizon where or holds. For this, let be the decision variables for the forward-looking problem started at a time for the time with . A formulation of this model could be of the form
+
+
+
+formula 4.32
+
+. In general, this problem is solved over time, implementing only the first decision, i.e. , . This is illustrated graphically in Figure 4 .5(a).
+It should also be noted that the time steps in themselves can represent simplifications, for example, if 20 min is represented by one time step in the true model, 60 min could be represented by the time step of the predictive strategy. If uncertainty is to be considered in the model, this method can also be used to set up a stochastic model
+
+
+
+Formula 4.33
+
+where denotes a sample (or scenario) from the set of all samples (of all possible scenarios) at a point in time. The problem from Formula 4 .33 corresponds to and the multilevel optimization problem from Formula 3 .8 from stochastic optimization and is shown in Figure 4 .5(b). (Powell 2014)
+
+Figure 4.5: Illustration of (a) a two-stage and (b) a multistage scenario tree for predictive strategies (Powell 2014).
+In practice, combinations of the above possibilities are usually used to generate strategies to achieve good results. For example, approximations of the cost function can be combined with predictive methods so that uncertainties can be accounted for more efficiently. Furthermore, an optimization problem can be modeled in such a way that one of the four presented methods delivers the best performance at a time. (Powell 2014)
+
+
+n chapter 4.2 it was shown that the structure for solving stochastic problems presented in chapter 3.2.1 is equivalent to the strategy generation by a (constrained) predictive strategy from Approximate Dynamic Programming. Nevertheless, solution techniques for this problem structure have been designed independently from Approximate Dynamic Programming. In the following, we restrict ourselves to the two-stage case of a stochastic optimization problem. The solution methods can be applied analogously to the multi-stage case, cf. Birge & Louveaux 2011, p. 199. For a comprehensive explanation, the reader is referred to Birge & Louveaux 2011. 
+Solving the problem from formula 3 .6 using a deterministic equivalent, i.e., solving the second-stage optimization problem formula 3 .7 and introducing a constraint for each scenario, implies solving an optimization problem for each scenario. Especially for problems with many scenarios, this becomes efficiently solvable only by using large-scale optimization methods, such as Benders decomposition (Benders 1962). To avoid evaluating the value function for each scenario for each first stage decision, the L-Shaped method can be used (van Slyke & Wets 1969). This approximates the nonlinear value function term formula 3 .7 from formula 3 .6 by a scalar. The approximation is iteratively improved by adding cutting planes, which determine the admissibility of possible solution candidates and the quality of the approximation. For the prescription for creating the cutting planes, we refer to Birge & Louveaux 2011, pp. 184-194. Cutting planes are added to the problem until a previously chosen quality criterion is reached.  (Birge & Louveaux 2011, p. 182)
+Another method that is used particularly frequently in practice is the so-called Stochastic-Dual-Dynamic-Programming (SDDP) (Pereira & Pinto 1991), although here, too, only the two-stage case is considered. In this method, the value function is also calculated by inserting cutting planes in the form of constraints. The peculiarity here is that the cutting planes are generated using the dual problem and the weak duality theorem, making the linear optimization problem 
+
+
+
+Formula 4.40
+
+with , as well as can be formed. Here stands for the approximation of the expected value in formula 3 .6 The dual variable of a decision is denoted by . It is known that the optimal solution of a linear optimization problem is always a corner of the polyhedral admissibility space, the dual variable always takes the value of a corner. Since there are countably many corners, these optimal points can be listed as. However, this set is generally not completely known, so a subset is used to generate the cutting planes. Cutting planes are added until the difference of a suitably chosen lower and upper bound is less than a predetermined termination criterion. (Pereira & Pinto 1991) 
+Like any cutting plane method, SDDP converges quite slowly and becomes unpredictable for problems with as few as three or four time periods (Asamov, Salas & Powell 2016). This is due to the history, addressed in Section 3.2, which must be carried along for each decision.
+

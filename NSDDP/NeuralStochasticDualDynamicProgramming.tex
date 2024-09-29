@@ -1,0 +1,92 @@
+\section{Neural Stochastic Dual Dynamic Programming}\label{Neural stochastic dual dynamic programming}
+In this section the approach from the paper \textit{Neural Stochastic Dual Dynamic Programming} will be presented.
+Neural stochastic dual dynamic programming (NSDDP) tries to significantly improve the state-of-the-art SDDP algorithm by providing major efficiency improvements \cite{NSDDP}. \\
+As mentioned in section \ref{Stochastic dual dynamic programming}, solving stochastic multistage problems can require an exponential number of iterations if the number of decision variables increases \cite{NSDDP}.
+Furthermore, every time the solver is used, each problem instance is purely solved on its own and no information about already solved problems with the same problem structure is used. \\
+Intuitively, the transfer of knowledge about solving a particular realization from a family of problems should be possible.
+If that could be exploited, the computational effort for solving problems from that particular problem family would become less intensive the more problems are solved, as some kind of experience could be established.
+The NSDDP approach tries to solve these shortcomings and provides two major functionalities to achieve this.
+
+First, it is able to project the high-dimensional space of the decision variables for the specific problem instance to a lower level representation to avoid computing exponentially many cutting planes for the value function approximation.
+Second, the approach leverages the experience of already solved problem instances, which only differ in their respective configuration, but still have the same general structure and uses that experience to augment the SDDP algorithm. \\
+An example would be an inventory optimization problem for a company for the year 2020 and an inventory problem for the year 2022, where the general structure of their restriction stays the same, only few specifications differ.
+Since the main downside of the SDDP algorithm realizes when many cutting planes for the approximation of the value function have to be computed, the goal of NSDDP is to augment SDDP in a way to overcome this disadvantage.
+
+In order to achieve this, the NSDDP approach uses a mapping that takes in information about a specific problem instance and predicts initial approximations for the value function with respect to the problem instance.
+This approximation can then be used as a warm start for the initial problem using the standard SDDP algorithm.
+The initialization with better bounds on the approximation leads to a reduction of necessary iterations of the SDDP algorithm, hence the computation time is reduced. \\
+Using the information of previously solved problem instances as training data can act as a form of experience hence the more problem instances are solved, the more experience the neural network gets and  the better the initial predictions for the optimality cuts become.
+
+In order to obtain this mapping, the authors specifically chose to exploit the generalization capabilities of deep neural networks to learn and compute such a function.\\
+The constructed neural network has a specific architecture, in that the problem instance and the stage of the problem is not directly processed to compute a prediction of optimality cuts.
+Instead, embedding layers for the two components are trained and the output of the respective embeddings is added and then passed to a multilayer perceptron, which predicts cutting planes that can be inserted in the initial problem.
+These cutting planes should provide better initial bounds on the optimal value function approximation than the ones that are generated during the initialization of the standard SDDP.
+This augmented problem can then be solved by a standard SDDP solver.
+As the results in \cite{NSDDP} show, the exploitation of this warm start can lead to significantly shorter computation times.
+This specific application of the NSDDP approach is called $v$-SDDP \cite{NSDDP}.
+
+An important result about stochastic programs that makes this approach computationally manageable, is that a value function of the stochastic problem is linear and convex in the decision variable $x_t$, if the problem almost surely has a solution for every scenario \cite{NSDDP}. \\
+Due to this result, the class of predicted value functions can be summarized with the set $M^{K}$ that is defined as
+\begin{equation}
+    M^{K} := \big\{\phi( \cdot ): \mathcal{X} \rightarrow \mathbb{R} \; |\; \phi(x) = \max_{k = 1, \dots, K} \beta^\intercal_k x + \alpha_k, \;  \beta_k \in \mathbb{R}^d,\, \alpha_k \in \mathbb{R} \big\}.
+\end{equation}
+The $K$ represents a hyperparameter that determines the number of linear pieces that are used for the affine linear function.
+The $\beta_k$ represents the gradient and $\alpha_k$ the intercept of the respective linear function with $k \in K$.
+The set $\mathcal{X}$ represents the feasible set from the optimization problem.
+
+The model learns to map a representation of the problem instance to a set of coefficients $\{\beta_k, \alpha_k\}_{k=1}^{K}$.
+Since all value functions will be from the set $M^K$, it is sufficient that the neural network only needs to predict the coefficients.
+This grand simplification is only possible since the value function can be represented as a maximum over piecewise-linear functions \cite{NSDDP}.
+
+In order to be able to learn a mapping from a problem instance to a function from the set $M^K$, a representation of the problem instance has to be defined.
+In \cite{NSDDP} the specific problem instance at time $t$ is described as a realization from a probability distribution of all possible problem instances.
+The formulation of the problem instances are quite general, as they just describe it as $\{(P_t, c_t, A_t, B_t, b_t)  \}_{t=1}^{T}$, where $P_t$ describes the distribution of the stochastic process.
+
+In order to maximize the quality of the computed cutting planes that approximate the value function, instead of using the usual squared euclidean distance metric between the coefficients of the value functions in the training set and the computed cutting planes, the so called earth-movers distance or Wassertein metric is used.
+The earth movers distance computes the pairwise distance between the computed points $\{\beta_k, \alpha_k\}_{k=1}^{K}$ and the known optimal points $\{\beta_k^{\star}, \alpha_k^{\star}\}_{k=1}^{K}$ from the training set \cite{NSDDP}. \\
+However, the main reason the authors chose to use the earth-movers distance, is that the coefficients of the respective approximations are order invariant, meaning it does not matter which cut is used first. \\
+Under these conditions, according to \cite{NSDDP}, the earth-movers distance provides an optimal transport comparison in terms of minimal cost over all pairings.
+
+Even if some form of experience can be gained from to this approach, a shortcoming that all stochastic programming algorithms share, and which is still present even when experience can be incorporated, is that the complexity of solving the problem generally increases drastically if the state and action spaces are enlarged.
+The computation time for the SDDP then increases exponentially in state and action space size.
+The NSDDP approach provides an approximate solution in order to mitigate that.
+
+Besides learning a mapping from the description instance and stage to optimality cuts, the approach can also learn a linear projection matrix $G \in \mathbb{R}^{p \times d}$ with $G^T G = \mathit{I}$ and $x = Gy$ with $y \in \mathbb{R}^{p}$, $p < d$, which is able to map the decision space to a lower dimension. \\
+If that matrix is applied to the entire problem instance, a low dimensional description of the problem could be solved instead of the initial problem.
+Being lower dimensional, the exponential increase in necessary iterations of the SDDP approach could be mitigated.
+The authors of \cite{NSDDP} use principal component analysis to compute the projection matrix $G$. \\
+The mapping that needs to be trained is then part of the set
+\begin{equation}\label{Projected_Problem}
+    \begin{split}
+        M^{K}_G := \big\{\phi( \cdot ): \mathcal{Y} \rightarrow \mathbb{R} \; |\; & \phi_G(y) = \max_{k = 1, \dots, K} \beta^\intercal_k Gy + \alpha_k, \;  \\ 
+        & \beta_k \in \mathbb{R}^d, \, G \in \mathbb{R}^{d \times p }\, \alpha_k \in \mathbb{R} \big\}
+    \end{split}
+\end{equation}
+An approach in \cite{NSDDP} is presented that exploits this low-dimensional description of the problem, the so-called \textit{fast-inference SDDP}. \\
+Instead of a problem with a $d$-dimensional decision vector, a smaller problem with a $p$-dimensional decision vector will be solved.
+All components that describe the problem instance will be projected with the matrix $G$ and the neural network is also trained on the projected problem instance. \\
+For this low-dimensional problem, initial optimality cuts are predicted with the neural network.
+The resulting problem is then solved with a standard SDDP solver and in order to obtain a point from the original problem the inverse of the projection matrix, hence $x = G^{-1}y = G^Ty$, can be applied to the computed low-dimensional solution.
+If further refinement of the solution is required, the point can be used as an initial point for a warm start of the SDDP algorithm. \\ 
+Since the main cause for an increase in computation time for the SDDP algorithm is the increase of the dimension of the decision variable, this approach can lead to a reduction of computation time.
+
+\subsection{Example application of NSDDP}\label{Example_application_NSDDP}
+A possible application of the NSDDP approach could be anywhere were it is necessary to solve optimization problems repeatedly whilst the configuration of the respective problem changes only slighty. \\
+An optimization problem were this is the case is the so called unit-commitment problem, a specific problem formulation of the economic dispatch problem.
+Both of these problems are part of a larger set of optimization problems called Optimal Power Flow (OPF) \cite{OptimalPowerFlow}.
+Optimal Power Flow problems are in general concerned with optimization problems that seek to optimize the operation of an electric power system with respect to physical constraints imposed by physical laws and engineering limits \cite{OptimalPowerFlow}.
+
+Given a network of power generators, the economic dispatch problem is concerned with finding how much power each unit should generate for a given demand, while minimizing the total operational costs \cite{PowerFlowGrossmannBuch}. \\
+The unit commitment problem can then be formulated by extending the problem over a multi-period timeframe and allowing the power generating units to be turned on or off \cite{PowerFlowGrossmannBuch}.
+The objective of this problem is to minimize the costs of power generation and the costs of the startup and shutdown of each generator for each time period \cite{PowerFlowGrossmannBuch}.
+This objective is subject to several constraints, the already mentioned physical and engineering constraints but also economic constraints, namely that the demand for each period is satisfied.
+Since in many real world applications, this demand is stochastic, the problem can be formulated as a stochastic optimization problem.
+
+The reason that the NSDDP approach is a suitable approach for this type of problem is that the general problem structure stays the same, as the physical constraints will stay the same and the constraints that are induced by the characteristics of the plant will only change if a major investment is made, like buying new generators.
+Only the demand changes frequently.
+The NSDDP approach is not only able to provide a computational speed up for the specific problem, but can still be used when changes to the problem structure, e.g. the distribution of the demand changes, due to unforeseen events happen.
+Moreover, it can be used when constraints regarding the power generator change, e.g. due a new purchase of a generator or legal changes that lead to different constraints.
+
+In general, the NSDDP approach would be able to operate for every possible change in the problem structure, as long as the trained neural network can make sufficiently good predictions for the respective problem instance, i.e. a similar structure was in the training set.
+If a concept drift appears, i.e. a fundamental change in the problem structure, a retraining of the neural network can be considered. \\
+A restriction that must be made, is that the objective function of the unit commitment problem has to be linear or otherwise has to be linearized, since the NSDDP approach assumes linear costs.

@@ -1,0 +1,23 @@
+\subsection{Challenges in Stochastic Optimization} \label{Challenges_stochastic_programming}
+As described in the sections above, the main challenges in the two presented frameworks is that they do not scale very well for big problems, due to the curse of dimensionality.
+One reason is that both approaches try to solve the respective sequential decision problem with a kind of backwards recursion. \\
+This approach is rarely applicable for problem settings in the real world, since the computational effort increases drastically if the problem has more than two stages, a large state space and many possible realizations of the stochastic process \cite{Powell_solving_Curses_of_Dimensionality}. \\
+The reason for this is the so-called \textit{curse of dimensionality}, a term coined by Bellman \cite{Bellman1957}.
+It generally describes the challenge that when the dimension of a problem increases, exponentially many points are needed to continue to describe it completely \cite{Bellman1957}. \\
+According to \cite{Powell_solving_Curses_of_Dimensionality}, \cite{Powell_Perspectives_of_ADP}, and \cite{TwenteBuchKapitel3}, the curse of dimensionality can be distinguished in three ways.
+\begin{enumerate}
+    \item The state space $\mathcal{S}$, i.e. the set of all states $S_t,\; t=1,\dots,T$ may become too large, such that it is no longer possible to evaluate the function $V_t(S_t)$ at each state $S_t$ in a reasonable time.
+    \item The decision space $\mathcal{X}_t$ may be too large, so that no optimal or even good decision can be found for all states in reasonable time.
+    \item The expected value of the value function may be too complex to be evaluated in reasonable time, since it may be a conditional expected value and there may be too many possibilities for realizations.
+\end{enumerate}
+Since problems encountered in practice very often have at least one of these three properties, dynamic optimization and hence stochastic optimization was long considered to be inapplicable in practice \cite{Powell_Clearing_the_Jungle_of_stochastic_Optimization}. \\
+Sequential decision problems are nevertheless common, certain frameworks were developed to cope with the aforementioned curse of dimensionality.
+One of which was the area of \textit{Approximate Dynamic Programming}, or ADP \cite{Powell_Perspectives_of_ADP} for short.
+According to \cite{Powell_solving_Curses_of_Dimensionality}, this framework is used in many research communities, only under different names such as 
+\textit{Neuro-Dynamic Programming} \cite{Neuro-dynamic-programming} or \textit{Reinforcement Learning} \cite{SuttonBartoRL}.
+The goal here is to find an approximate solution to a dynamic optimization problem, since the curses of dimensionality make it very hard to find an exact solution in a reasonable amount of time. \\
+The techniques developed in the stochastic programming community follow a similar approach, in that usually the expected value of the value function is approximated.
+It can be argued that the methods used in stochastic programming can also be classified as methods of approximate dynamic programming \cite{POWELL2019795}.
+
+In the following sections, a selection of these approximation methods is presented.
+However, the focus will mainly be on the methods from stochastic programming.

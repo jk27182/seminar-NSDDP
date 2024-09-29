@@ -1,0 +1,35 @@
+\section{Introduction} \label{Introdcution}
+Optimization problems can be found in a variety of fields and have multiple applications, for instance in the energy sector \cite{PereiraPinto1991}, logistics, machine learning and many more.
+In several industrial settings, the problem is decomposed into multiple stages.
+% These stages are usually determined by the  like multiple time periods
+These stages are usually defined in terms of time, but are not bound to a specific number of days or hours. For example, a problem that lasts for more than a year, can still be decomposed into two stages if the problem structure only changes once.
+These problems arise in a multitude of settings like fleet management \cite{example_powell_fleet_management}, supply-chain optimization \cite{example_supply_chain_optimization}, portfolio optimization \cite{example_portfolio_opt} and power scheduling in a Hydro-Thermal System \cite{example_power_scheduling_Nowak2000}.
+These problems involve making decisions based on current knowledge.
+After the execution of the first-stage decision, new information from the environment is observed and is used for a successive decision.
+Optimization problems from this kind of problem class are called sequential decision problems \cite{Powell_solving_Curses_of_Dimensionality}.\\
+% The problem class of these kind of optimization problems are called sequential decision problems \cite{Powell_solving_Curses_of_Dimensionality}.\\
+Since these sequential decision problems are calculating decisions over a time frame,
+it would be a strong assumption to consider them deterministic, hence they are assumed as stochastic.
+One approach to solving optimization problems under uncertainty is stochastic optimization.
+According to Powell \cite{POWELL2019795,Powell_Clearing_the_Jungle_of_stochastic_Optimization}, stochastic optimization has many research streams, the major ones being stochastic dynamic optimization and stochastic programming.
+Stochastic programming is more common in operations research fields, while stochastic dynamic programming is used in optimal control, like in electrical engineering.
+Both frameworks will be briefly discussed in this seminar paper.
+
+This paper discusses the new advances made in the paper 'Neural Stochastic Dual Dynamic Programming' by Dai and Xue et al. \cite{NSDDP}.\\
+First, a quick introduction is given to describe different frameworks in order to solve sequential optimization problems, namely stochastic programming and stochastic dynamic programming.
+After that, a short overview of the major challenges of these methods is presented, namely the curse of dimensionality.
+In the next section, the current state-of-the-art approaches out of the framework of stochastic programming for solving these problems are
+presented, namely the L-shaped method, an extension of Benders decomposition, and stochastic dual dynamic programming.
+For each approach, the pros and cons are discussed.
+Moreover, the neural stochastic dual programming approach from Dai and Xue et al. \cite{NSDDP} is presented in detail with an emphasis on the advantages and disadvantages over current solving methods, and also what the limitations and constraints of this approach are.
+Following that section, own computations based on my implementation of the neural stochastic dual dynamic programming approach are presented.
+Finally, a conclusion and an outlook on possible future research is given.
+
+\subsection{Stochastic Optimization}
+In the following section, the frameworks of stochastic programming and stochastic dynamic optimization are discussed.
+They are similar in that they both try to find an optimal policy instead of finding an optimal solution.
+An optimal policy is a function that provides an optimal solution given the current known information about the environment \cite{POWELL2019795}. 
+The disparities and similarities of these two approaches will be discussed in the following sections.
+\input{Introduction/Stochastic_Programming}
+\input{Introduction/Stochastic_Dynamic_Programming}
+\input{Introduction/Curse_of_Dimensionality}

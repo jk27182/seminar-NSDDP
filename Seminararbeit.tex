@@ -1,0 +1,159 @@
+% Kompiliert mit pdfLaTex
+%
+% Institut für Operations Research
+% Lehrstuhl für stochastische Optimierung
+% Prof. dr. Steffen Rebennack
+%
+%%
+
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[ansinew]{inputenc} % Bei Benutzung von Apple-Betriebssystemen bitte durch ``\usepackage[applemac]{inputenc}'' ersetzen.
+\usepackage[T1]{fontenc}
+ 
+\usepackage[english]{babel} 
+%\usepackage[nospace,noadjust]{cite}
+\usepackage{xcolor}
+\usepackage{eurosym}
+\usepackage{amssymb,amsmath}
+
+% \usepackage{biblatex}
+% \addbibresource{references.bib}
+
+\usepackage{graphicx} 
+\usepackage{tikz}
+\usepackage{float}
+\usetikzlibrary[trees]
+\usepackage{color}
+\definecolor{kit}{cmyk}{1,0,.6,0}
+
+\usepackage{hyperref}
+\hypersetup{pdftoolbar=true,
+            pdfmenubar=true,
+            pdfpagemode=UseOutlines,
+            bookmarksnumbered=true,
+            linktocpage=true,
+            colorlinks=false,
+            %backref, % Entkommentieren, um zu sehen, ob alle Literaturstellen im Text zitiert werden.
+            colorlinks=false
+            }
+
+\newtheorem{definition}{Definition}[section]
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{corollary}[definition]{Corollary}
+\newtheorem{remark}[definition]{Remark}
+\newtheorem{example}[definition]{Example}
+\newtheorem{algorithm}[definition]{Algorithm}
+
+
+\setlength{\parindent}{0pt}
+\parskip1.5ex
+
+\newcommand{\R}{\mathbb R} % Beispiel für die Definition eines eigenen Befehls
+\begin{document}
+\begin{titlepage}
+
+\begin{figure}
+\begin{minipage}{0.2\textwidth}
+\includegraphics[scale=.6]{kit_logo_de_4c_positiv-rgb.pdf}
+\end{minipage}
+\hfill
+\begin{minipage}{0.6\textwidth}
+\begin{flushright}
+Institut f\"ur Operations Research \\
+Lehrstuhl f\"ur stochastische Optimierung \\
+Prof. Dr. Steffen Rebennack \\
+\medskip
+\end{flushright}
+\end{minipage}
+\bigskip
+\end{figure}
+
+\vspace*{35pt}
+
+\begin{center}
+\Large{Seminar}    
+
+\vspace*{35pt}
+
+\fboxsep 40pt
+\fboxrule 6pt
+\fcolorbox{kit}{white}{\parbox{80mm}{\begin{center}\Large{Neural Stochastic Dual Dynamic Programming}\\ \end{center}}}
+
+\vspace*{40pt}
+
+\normalsize
+
+by \\[4ex]
+
+Janik K\"onigshofer \\
+Matr. Nr.: -------\\
+Study program: Master\\[4ex]
+
+Date\\
+June 27, 2022 \\[4ex]
+
+Adviser: Dr. John Alasdair Warwicker
+
+\end{center}
+
+\end{titlepage}
+\thispagestyle{empty}\cleardoublepage
+
+\mbox{}\thispagestyle{empty}\cleardoublepage
+
+\vspace*{2eM}
+
+{\Large \textbf{Erkl\"arung}} 
+% Bitte prüfen Sie, ob dies die für Ihren Studiengang verlangte Erklärung ist!
+
+\bigskip
+Ich versichere wahrheitsgem\"a\ss, die Arbeit selbstst\"andig angefertigt und alle benutzten Hilfsmittel und Quellen vollst\"andig angegeben zu haben, die w\"ortlich oder inhaltlich \"ubernommenen Stellen als solche kenntlich gemacht zu haben und die Satzung des KIT zur Sicherung guter wissenschaftlicher Praxis beachtet zu haben.\\
+
+\vspace*{3eM}
+
+\textit{17.06.2022} \hspace{8cm} \textit{Janik K\"onigshofer}
+\thispagestyle{empty}\cleardoublepage
+
+\mbox{}\thispagestyle{empty}\cleardoublepage
+
+\setcounter{page}{3}
+
+\begin{abstract}
+In practical applications, optimization problems often involve uncertainties. In order to handle these uncertainties, methods from stochastic optimization are needed. Unfortunately, these methods are often limited to low-dimensional problems, since they do not scale well for large problems, caused by the curse of dimensionality. 
+One of the most commonly used approaches is the stochastic dual dynamic programming algorithm (SDDP), which has a worst-case complexity that scales exponential in the number of decision variables.
+In this paper the approach of Neural Stochastic Dual Dynamic Programming by Dai and Xue et al. is discussed, an approach which augments SDDP, by utilizing neural networks in order to compute initial optimality cuts for a warm start of the SDDP algorithm and projecting the problem to a low-dimensional representation, to avoid the exponential increase in necessary iterations.
+A possible real-world application of the NSDDP approach on the unit-commitment problem from Optimal Power Flow is presented and discussed. Own computations on a two-stage news-vendor problem illustrate the potential of the approach and highlight its advantages and disadvantages.
+\end{abstract}
+\thispagestyle{empty}\cleardoublepage
+
+\mbox{}\thispagestyle{empty}\cleardoublepage
+
+\tableofcontents
+
+\newpage
+\ \newpage
+
+\include{Introduction/Introduction}
+\include{StochasticProgramming}
+\include{State_of_the_Art/SotA}
+\include{NSDDP/NeuralStochasticDualDynamicProgramming}
+\include{Own_Computations/OwnComputations}
+\include{Discussion_and_Conclusion/Discussion_and_conlcusion}
+
+% \begin{thebibliography}{7}
+
+% \bibitem{Nic10SW}
+% \textsc{S. Nickel, O. Stein, K.-H. Waldmann,}
+% \textit{Operations Research,}
+% Springer, 2013.
+
+% $\vdots$
+
+% \end{thebibliography}
+%\printbibliography
+\medskip
+\bibliographystyle{unsrt}
+\bibliography{references}
+\end{document}

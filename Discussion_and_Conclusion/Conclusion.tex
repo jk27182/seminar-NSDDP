@@ -1,0 +1,9 @@
+\section{Conclusion}
+This seminar paper presented an overview of the field stochastic optimization, what frameworks exist and what advantages and disadvantages each framework provide.
+The current state-of-the-art algorithms were presented and the advantages and disadvanteges were discussed.
+The main disadvantages that was common for all but approach, was the bad scalability for larger problems with more stages.
+The stochastic dual dynamic programming algorithm was able to solve this shortcoming by sampling the scenario tree.
+However, this approach also suffered from bad scalability as the number of necessary iteration for SDDP increased exponentially with the dimension of the decision variables.
+The neural stochastic dual dynamic programming approach tries to solve these shortcomings by predicting optimality cuts based on a representation of the problem instance with a meta-machine learning mode, which can be used as a warm start for the SDDP algorithm and also by providing a projection to a low-dimensional representation that can be solved faster.
+Own Experiments were provided that showcased the advantages and the potential of NSDDP but also the drawbacks of that approach.
+These drawbacks where discussed and and outlook for possible future research topic to solve these drawbacks was given.

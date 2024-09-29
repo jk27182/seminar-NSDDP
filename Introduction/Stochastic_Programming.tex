@@ -1,0 +1,111 @@
+\subsubsection{Stochastic Programming}\label{Stochastic Programming}
+Stochastic programming is a framework from the field of operations research, which deals specifically with the solution of optimization problems that span over multiple periods and involve uncertainty. \\
+Stochastic optimization problems, also often referred to in the literature as \glqq Stochastic Program\grqq{} or simply SP, are according to \cite{BirgeLouveaux} optimization problems where part of the information about the problem is uncertain. \\
+A common approach to solve this class of problems is to split these problems into two time-discrete stages.
+In the first stage, the problem is considered without the knowledge of the uncertain data in the future and is hence deterministic. However, the decision in the first stage, usually denoted by $x$, tries to hedge against future outcomes or possibly occurring future costs, by accounting for these in the objective function. \\
+One method to do that is to measure the uncertainty of these stochastic future outcomes with an uncertainty measure \cite{Fuellner_SDDP_TUT}. 
+The uncertainty measure of choice is usually the expectation, however other measures are also possible. For a detailed discussion of these measures, see \cite{BirgeLouveaux}.
+
+After the first-stage decision is taken, new information $\omega$ from the environment is observed as a realization of a random variable $\xi$ that represents the stochastic process, where $\omega \in \Omega$ and $\Omega$ is the set of all possible outcomes. \\
+That additional information can be used to derive a subsequent second-stage decision as a recourse, usually denoted by $y$ to account for the changes in the environment by which the first stage decision $x$ is no longer optimal. \cite{Fuellner_SDDP_TUT, BirgeLouveaux}.
+Since $y$ is dependent on the realization $\omega$, the second stage decision is sometimes denoted as $y(\omega)$.
+
+According to \cite{Lectures_on_stochastic_Programming_Shapiro_Ruszczynski}, the linear case of the described two-stage stochastic optimization problem can be formulated as follows
+\begin{subequations}\label{stochastischeFormulierung}
+    \begin{alignat}{3}
+          &\min_x        &\quad& c^T x + \mathbb{E}_\xi \left[ Q(x,\xi(\omega))  \right] \label{SP_Zielfunktion mit EW}\\
+          &\textrm{ s.t.}  &\quad& A x = b \\
+          &              &\quad&x\geq0,
+    \end{alignat}
+\end{subequations}
+where the function $Q$ is called the value function of the second stage and according to \cite{Lectures_on_stochastic_Programming_Shapiro_Ruszczynski} is given as
+\begin{subequations}\label{Zweite_Stufe_Problem}
+    \begin{alignat}{4}
+         Q(x,\xi(\omega)) := & \min_y        &\quad& q^T(\omega)y  \\
+                             & \textrm{ s.t.}  &\quad&W(\omega)y = h(\omega) - T(\omega)x \label{Recourse Gleichung}\\
+                             &                &\quad&y\geq0.
+    \end{alignat}
+\end{subequations}
+In most cases, the underlying stochastic process is represented as a scenario tree, where a sequence of realizations $\{\xi_t\}_{t=1}^{T}$ is called a scenario. \\
+An example of a scenario tree for a problem with three stages and three possible stochastic outcomes at the first stage and two possible scenarios at the second stage is shown in figure \ref{fig:scenario_tree}.
+This scenario tree has six different scenarios, one possible scenario, marked as \textit{scenario 6}, is highlighted in black.  \\
+% Set the overall layout of the tree
+\tikzstyle{level 1}=[level distance=3.5cm, sibling distance=3.5cm]
+\tikzstyle{level 2}=[level distance=3.5cm, sibling distance=2cm]
+
+% Define styles for bags and leafs
+\tikzstyle{end} = [minimum width=3pt]
+\tikzstyle{standard} = [circle,draw, minimum width=8pt,fill=gray]
+\tikzstyle{scenario} = [circle,draw, minimum width=8pt,fill=black]
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[grow=right, sloped, scale=0.7]
+    \node[scenario] {}
+        child [black] {
+            node[scenario] {} % This is the first of three "Bag 2"
+            child {
+                node[scenario] {}
+                child {
+                    node[end] {Scenario 6}
+                }
+            }
+            child [black] {node[standard] {}}
+        }
+        child [black] {
+            node[scenario] {}
+            child {
+                node [scenario] {}
+                    child {
+                        node [end] {Scenario 3}
+                    }
+            }
+            child {
+                    node[standard] {}
+            }
+        }
+        child [black] {
+            node [scenario] {}
+                child {% Here are three children, hence three end branches
+                    node [standard] {}
+                }
+                child {
+                    node [scenario] {}
+                    child {
+                        node [end] {Scenario 1}
+                    }
+                }
+        }
+    ;
+    \end{tikzpicture}
+    \caption{Scenario tree with two stages and six scenarios, inspired by \cite{Fuellner_SDDP_TUT, Powell_Clearing_the_Jungle_of_stochastic_Optimization}}
+    \label{fig:scenario_tree}
+\end{figure}
+According to Powell \cite{Powell_solving_Curses_of_Dimensionality}, the sequence of decisions and events can then be stated as follows:
+\begin{align*}
+    x \rightarrow \xi(\omega) \rightarrow y(\omega,x) .
+\end{align*}
+The classical formulation of a stochastic optimization problem with recourse assumes a linear objective function, although extensions to the nonlinear case are also possible \cite{BirgeLouveaux}.
+The principle of two-stage optimization can be easily transferred to the multistage case, but it introduces additional complexity. \\
+According to \cite{Lectures_on_stochastic_Programming_Shapiro_Ruszczynski}, the multistage problem can be formulated as follows.
+
+Let $\xi_t$ be a known random vector with a corresponding population $\Omega_t$ for the stage $t = 2, \dots,T$. $\Omega_t|\omega_{t-1}$ is the conditional population for the stage $t$, given that in stage $t-1$ the event $\omega_{t-1} \in \Omega_{t-1}$ has occurred. \\
+A multistage optimization problem with time horizon $T > 2$ has the following structure, again restricting ourselves to the linear case:
+\begin{subequations}\label{stochastische Multistage Formulierung}
+    \begin{alignat}{2}
+         \underset{x}{\min}  & \quad  c_1^T x_1  + \mathbb{E}_{\xi_2} [  \min c_2(\omega_2)x_2(\omega_2) + \mathbb{E}_{\xi_3}[\dots +                                                                                                 \mathbb{E}_{\xi_T}[ \min c_T(\omega_T)x_T(\omega_T)] ]  ]\\
+      \textrm{s.t.}  & \quad W_1 x_1 = h_1                                                             \\
+                     & \quad T_1 (\omega_2) x_1 + W_2 (\omega_2) x_2(\omega) =h_2(\omega_2),  \quad  \forall \omega_2 \in \Omega_2\\
+                     & \quad \quad \vdots                                                                          \\
+                      \begin{split}
+                        \quad T_{T-1} (\omega_T) x_{T-1} + W_T (\omega_T) x_T(\omega)=h_T (\omega_T),   \\ 
+                        \forall \omega_{T-1} \in      \Omega_{T-1},\, \omega_T \in \Omega_T \mid \omega_{T-1} 
+                       \end{split} \\
+                     &\quad x_1 , x_t(\omega_t) \geq 0                                                \quad   t= 2,\dots,T
+    \end{alignat}
+\end{subequations}
+Problem \ref{stochastische Multistage Formulierung} is also called the extensive form of a stochastic program.
+This is in fact the deterministic equivalent of the stochastic program, since for every possible scenario, an extra constraint is added to the problem \cite{BirgeLouveaux}.\\
+This is a linear problem that can be solved by conventional solvers for LPs.
+However, since the problem size can drastically increase if more complexities are added, large-scale optimization methods should be considered to solve this problem in reasonable computing time. \\
+A further constraint is that the number of variables and constraints grow exponentially with an increasing number of stages.
+Furthermore, this problem can only be solved for a discrete probability distribution, otherwise the problem has to be discretized, since problem \ref{stochastische Multistage Formulierung} would have an infinite number of constraints \cite{SDDP_Solver_Paper}.

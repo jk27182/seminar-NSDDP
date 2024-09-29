@@ -1,0 +1,32 @@
+\subsection{Approximate Dynamic Programming}\label{Aproximate Dynamic Programming}
+Approximate Dynamic Programming tries to solve multistage problems by solving the Bellman-Equation, which can be notoriously hard to compute, since it suffers from the curse of dimensionality \cite{Powell_Clearing_the_Jungle_of_stochastic_Optimization, BertsekasVol1, BertsekasVol2}. \\
+The reason for this, among the reasons described in section \ref{Challenges_stochastic_programming}, is the complexity of the calculation of the value function.
+For an exact calculation of this function, if no closed solution is known, every possible state from the state space must be evaluated, a set which exponentially increases with the number of stages \cite{Powell_solving_Curses_of_Dimensionality}.
+If the problem is also stochastic, the size increases exponentially, not only in the number of stages but also in the number of scenarios at each stage, which can be seen in figure \ref{fig:scenario_tree}. \\
+Approximate Dynamic Programming provides several methods to overcome these challenges, one of which being value function approximation, which will be covered briefly in this section. 
+Note the different use of notation in these sections, which is based on the notation in \cite{Powell_solving_Curses_of_Dimensionality}. \\
+The basic algorithmic procedure for a general value function approximation is based on forward iterations in time, also called Forward Dynamic Programming \cite{POWELL2019795}.
+In the classical solution methods of dynamic optimization problems, the computation steps are conducted backwards in time, i.e. starting in the temporally last time period up to the temporally first time period, in order to solve the Bellman equation by means of backward recursion \cite{POWELL2019795, Powell_solving_Curses_of_Dimensionality}.
+The optimal decisions values are then implicitly determined by computing the value functions as described in section \ref{stochastic_dynamic_programming}, but these optimal solutions are generally still unknown in the forward iterations.
+Since the forward iteration starts in the first stage, an initial value function approximation is necessary.
+Depending on if the problem is a minimization or maximization problem, the initial approximation is usually set to $0$ or $\infty$ \cite{POWELL2019795}.
+Suppose at an iteration $n$ of the forward iteration at a time $t$, the system is in a state $S_t^n$.
+Then the problem \ref{Bellman-Gleichung} can be transformed into the optimization problem
+\begin{align}\label{ADP:approximation of Bellman equation}
+    \hat{v}^n_t &= \underset{x_t \in \mathcal{X}_t}{\min} \, C(S_t^n, x_t) + \gamma \mathbb{E} \left\{\overline{V}_{t+1}^{n-1}(S_{t+1}^n) \mid S_t^n \right \}
+\end{align}
+where $S_{t+1}^n=S^M(S_t,x_t,\xi_{t+1})$ describes the state transition function from stage $t$ to $t+1$. 
+$\overline{V}^{n-1}_{t+1}(S_t^n)$ denotes the approximation of the value function $V_{t+1}$ of the state $S_{t+1}$ at iteration $n$.
+According to \cite{POWELL2019795, Powell_solving_Curses_of_Dimensionality}, the approximation is then iteratively improved in a backward pass starting in the last stage $t=T$ to the first stage $t=1$ using $\hat{v}^n_t$, and the formula 
+\begin{subequations}\label{value_function_Update_TemporalDifference}
+\begin{align}
+    \overline{V}_t^n(S_t^n) &= \overline{V}_t^{n-1}(S_t^n) - \alpha_{n-1}(\hat{v}^n_t - \overline{V}_t^{n-1}(S_t^n)) \\
+    & = (1-\alpha_{n-1})\overline{V}_t^{n-1}(S_t^n) + \alpha_{n-1}\hat{v}^n_t,
+\end{align}
+\end{subequations}
+where $\alpha_{n-1}\in (0,1)$ is a step size.
+Choosing a good step size is essential for a good approximation, for a comprehensive review of different ways of calculating step sizes, please refer to \cite{George_Powell_Stepsizes_Review}. \cite{Powell_solving_Curses_of_Dimensionality} \\
+Using the approximations and equation \ref{ADP:approximation of Bellman equation}, approximate decisions can be computed.
+The transition from a state $S_t$ in stage or time $t$ to a state $S_{t+1}$ is determined using the transition function $S_{t+1} = S^M(S_t,x_t,\xi_{t+1}(\omega_{t+1}))$, assuming that such a function is known \cite{Powell_solving_Curses_of_Dimensionality}.
+For a forward iteration implementation, the stochastic exogenous information process of the transition function $S^M(S_t,x_t,\xi_{t+1}(\omega_{t+1}))$ is modeled by drawing a sample of the corresponding random variable $\xi_{t+1}$ at each stage \cite{Powell_solving_Curses_of_Dimensionality}.
+The sequence of realizations of these samples is also called the sample path $\Bar{\omega} = (\xi_1,\dots,\xi_T)$ \cite{Powell_solving_Curses_of_Dimensionality}.

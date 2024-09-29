@@ -1,0 +1,80 @@
+\subsection{Benders decomposition}\label{Benders Decompositions}
+In this section, the Benders decomposition is shortly presented, which is the foundation for the L-shaped method that will be presented afterwards. \\
+The Benders decomposition is a solution method for large-scale optimization problems, first introduced by Benders \cite{Benders1962}.
+It generally deals with problems where the problem structure can be divided into a part that is hard to solve and into a part that can be easily solved. \\
+This method is not exclusive to stochastic programming, as it is used extensively in mixed-integer optimization, where the complicating variables with integrality constraint are separated from the continuous variables, which can be solved efficiently with e.g. the simplex method \cite{floudas1995}. \\
+As mentioned in section \ref{Stochastic Programming}, stochastic optimization problems can also be formulated as large scale optimization problem, known as the extensive form, hence they can be solved with Benders decomposition \cite{BirgeLouveaux}.
+In this approach, starting from an initial problem, subsequent optimization problems are generated, which iteratively add cuts to ensure feasibility and optimality of computed points. \\
+In the linear case, the Benders decomposition uses duality arguments to iteratively create these cuts \cite{ggo2}.
+The value function becomes a parameterized optimization problem, in that it is only depended on the complicating variables.
+In the mixed-integer case it is dependent on the variable with integrality constraints.
+In general an optimization problem of the form
+\begin{align}\label{MILP:Allgemeines Problem}
+    \begin{array}{crcc}
+        \underset{(x, y) \in M}{\min} &c^T  x  + d^T y              
+    \end{array}
+\end{align}
+with real vectors $c \in \mathbb{R}^n$ and $d \in \mathbb{R}^m$, the problem can be reduced to
+\begin{align}
+\underset{y \in \mathbb{Y}}{\min}\: v(y) + d^Ty,
+\end{align}
+with $M := \{(x, y) \in \mathbb{R}^n \times \mathbb{Y} \, | \,  Ax + By =b \, , x \geq 0 \}$, according to \cite{ggo2}, and $\mathbb{Y}$ being some description of the complicating variable $y$.
+The function $v(y)$ depends on the value of $y$ and represents the optimal value the problem $LP(y)$,
+which \cite{ggo2} defines as
+\begin{align}\label{Benders: Value function}
+    \begin{array}{crl}
+        \underset{x}{\min} &c^T  x       \\
+            \textrm{s.t.}  & A x  &= b - By \\
+                           &   x    & \geq 0 .
+    \end{array}
+\end{align}
+The key to this approach is that in the linear case, arguments from duality theory from linear programming can be exploited to get a functional description of the feasible set and the value function $v(y)$.
+These arguments are iteratively used to create the aforementioned cuts to ensure feasibility and optimality.
+The combination of these concepts leads to the following formulation according to \cite{ggo2}:
+\begin{align}\label{BendersFormulierung}
+    \begin{array}{lccc}
+          \underset{z}{\min} &z             &                   &          \\
+          \textrm{s.t.}      &(B^T r^j)^T y &\, \leq \, b^T r^j,&j \in J   \\ 
+                             &(B^T \lambda^k + d)^T y - z &\, \leq \, b^T\lambda^k ,& k \in K\\ 
+                             &\quad                       & y\ \in \, \mathbb{Y}.                   &               
+    \end{array}
+\end{align}
+% The index sets $J$ and $K$ describe the indeces of ed
+The $r^j$ describes the $j$th edge of the feasible set of the dual of a functional description of the feasible set from problem \ref{MILP:Allgemeines Problem}.
+The $\lambda^k$ describes the edges of the feasible set of the dual from problem \ref{Benders: Value function}.
+For a more thorough derivation, see \cite{ggo2, floudas1995}. 
+The method in the next section, the L-Shaped method, applies these concepts the problem class of stochastic optimization problems.
+
+\subsubsection{L-Shaped Method} \label{L-Shaped Methode}
+The L-Shaped Method is an extension of the Benders decomposition and goes back to Van Slyke and Wets \cite{LShapedVanSlyke}.
+In the two stage scenario, the variables of the second stage are grouped into the value-function $\mathbb{E}[Q(x, \xi(\omega))]$. This corresponds to the parameterized value function from last section, where the optimal value of the second stage was parameterized.
+Just like in general Benders decomposition, results from duality theory is used to generate cuts to ensure feasibility and optimality.
+This is done by first creating a so called master-problem. This master problem is constructed by using the deterministic first-stage variables and an auxiliary variable $\theta$.
+This variable $\theta$ represents the approximation of the expected value function in \ref{stochastischeFormulierung} from section \ref{Stochastic Programming}.
+Just like in the Benders decomposition, the respective feasibility and optimality cuts are now just generated for each second stage problem. 
+With indices $k$, $r$ and $v$ for the respective iteration, according to \cite{BirgeLouveaux}, the master problem is then of the following form:
+\begin{subequations}\label{L_Shaped}
+    \begin{alignat}{7}
+          \underset{x,\theta}{\min}&\quad&c^T  x&\,+\,\theta&  &             &&              \quad&\\
+          \textrm{s.t.}            &\quad&    &    A x   &        &\, \leq \,&& b            \quad&\\ 
+                                   &\quad&    &E_l x \;+ & \theta &\, \geq \,&& e_l,  \quad&  l=1,\dots,k \\
+                                   &\quad&    &          & D_l x  &\, \geq \,&& d_l,  \quad&  l=1,\dots,r \\
+                                   &\quad&    &          & x      &\, \geq \,&&0,                  &
+    \end{alignat}
+\end{subequations}
+with $\theta \in \mathbb{R}$, $E_{l+1}= \sum^{S}_{s=1} p_k (\pi^v_s)^T T_s  $ and $e_{l+1} = \sum^{S}_{s=1} p_k (\pi^v_s)^T  h_s$.
+Furthermore, $D_{l+1} = (\sigma^v)^T T_k$ and $d_{l+1} = (\sigma^v)^T h_k$, where $\sigma^v$ is the dual solution of a linear program that checks the feasibility of the second stage \cite{BirgeLouveaux}.
+The $\pi^v$ is the dual solution of the second-stage problem \ref{Recourse Gleichung} with the trial solution $x^v$.
+% Since the optimality cuts are lower bounds for the expected value function originating from the dual second-stage problem, these cuts can be interpreted as a weak duality condition. Due to strong duality, this becomes an equation at an optimal point.
+The major improvement over an extensive solution is now that usually all dual solutions have to enumerated to make problem \ref{L-Shaped Methode} equivalent to \ref{stochastischeFormulierung}.
+However, in this L-shaped method not all dual solutions are needed, since the conditions imposed by the optimality cuts can be fulfilled even for a subset of all dual solutions.
+Since this was only for two-stage problems, extensions to multi-stage problems are possible, for example with the nested Benders decomposition.
+
+\subsubsection{Nested Benders decomposition}
+The nested Benders decomposition is an extension of the L-shaped method and was proposed by Birge \cite{Birge1980SolutionMF}. This section briefly describes this procedure.
+According to F\"ullner \cite{Fuellner_SDDP_TUT}, the nested Benders decomposition can be interpreted as a nested sequence of solving 
+two-stage stochastic programs whilst traversing a scenario-tree.
+As in the L-Shaped method, in the nested Benders decomposition the expected value function is approximated by cutting planes, so the value functions do not require that they are evaluated at all possible states \cite{Fuellner_SDDP_TUT}.
+If the problem is not too large, this procedure can break the curse of dimensionality \cite{Fuellner_SDDP_TUT}.
+However, for bigger problems this approach becomes computationally intractable since the scenario tree is still traversed and that still grows exponentially in the number of stages \cite{Fuellner_SDDP_TUT}.
+One method to avoid this exponential growth in the number of stages is the Stochastic dual dynamic programming algorithm, which will be presented in the next section.

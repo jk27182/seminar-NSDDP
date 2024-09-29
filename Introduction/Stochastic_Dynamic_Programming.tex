@@ -1,0 +1,38 @@
+ \subsubsection{Stochastic dynamic optimization} \label{stochastic_dynamic_programming}
+Another research stream that focuses on solving multistage stochastic optimization problem is stochastic dynamic optimization.
+This research stream is more focused on representing dynamic behavior in an optimization problem and on solving sequential decision problems by solving the well-known Bellman-Equation, which was first introduced by Bellman in 1957 \cite{Bellman1957}. \\
+As before, the goal in this framework is not find a single optimal solution vector, but to find an optimal function or policy, that provides an optimal solution given an environmental state $S_t$ at time $t$.
+According to Powell \cite{Powell_solving_Curses_of_Dimensionality}, this state describes all information that is necessary to make an optimal decision and is known at stage $t$.
+The problem of finding this optimal policy can be traced back to solving the Bellman equation, according to \cite{Einfuehrung_in_das_OR}.
+In e.g. \cite{Einfuehrung_in_das_OR} it has already been shown that the determination of an optimal policy or strategy and the optimal value of the problem can be traced back to the solution of the Bellman equation.
+This equation has, according to \cite{Powell_solving_Curses_of_Dimensionality}, the form shown in equation \ref{Bellman-Gleichung} and provides an optimality condition for the value functions,
+\begin{align}\label{Bellman-Gleichung}
+       V_{t}(S_{t})& = \underset{x_{t}\in{\mathcal{X}_{t}}}{\min}\, C_{t}(S_{t},x_{t}) + \gamma \mathbb{E}\left[ V_t(S_{t+1}) \mid S_t \right]
+\end{align}
+with $V_t(S_t)$ being the value functions, describing the value of a state $S_t$ at a time $t$, provided an optimal strategy is followed from time $t$ \cite{Einfuehrung_in_das_OR}.
+The term $C_{t}(S_{t},x_{t})$ represents a cost function that depends on the stage of the system $S_t$ and the chosen decision $x_t$, which is selected from the feasible set $\mathcal{X}_t$ of stage $t$.
+The $\gamma$ represents a discount factor which describes how much the future outcomes are affecting present decisions \cite{Einfuehrung_in_das_OR, Powell_solving_Curses_of_Dimensionality}.
+The discount factor can also be interpreted as a measure about how much the forecasts about the future outcomes are trusted. \\
+After a decision $x_t$ is chosen and a realization from the underlying stochastic process can be observed, the environment transitions to the state $S_{t+1}$.
+That state is determined by a transition function $S^M(S_t, x_t, \xi(\omega_t))$ \cite{Powell_solving_Curses_of_Dimensionality}.
+
+Equation \ref{Bellman-Gleichung} shows that the multistage problem is decomposed into a here-and-now decision and a value function that accounts for future decisions that are affected by the current state decision.
+The Bellman equation is then solved by backwards recursion, first solving the problem of stage $t=T$, where the value function for $t=T+1$ is usually set to $V_{T+1} \equiv 0$ for all states $S_T$.
+
+Since the solution of the problem in stage $T$ is used as a value function in stage $T-1$, the problem for this stage can be solved.
+The subsequent stages can then be solved following the same procedure.
+This procedure can be visualized via the scenario tree in figure \ref{fig:scenario_tree}, by going backwards from the leafs to the root of the tree for all scenarios. \\
+However, this approach quickly becomes computationally intractable, as the number of problems to solve increases exponentially with the number of stages. Furthermore, the probability distribution is assumed to be discrete and otherwise has to be discretized in the continuous case.
+If the state space $\mathcal{S}_t$ for all states $S_t$ in stage $t$ is continuous or generally to large, the problem also becomes intractable since the value function has to be evaluated at every stage. 
+If no closed-form or approximation of the value function is available, this task becomes nearly impossible \cite{Powell_solving_Curses_of_Dimensionality}. 
+Generalizations of the Bellman equation to the continuous-time case are possible, the corresponding optimality condition is known as the Hamilton-Jacobi equation \cite{continous_time_stochastic_control}.
+However, this will not be discussed further.
+
+% The dynamic programming equations can be solved by SDP solution methods,
+% backwards and evaluating the expected value functions Qt(·) for all possible states
+% realizations of the uncertain data, which, in turn, requires to find an optimal decision over all possible actions xt.
+% For this evaluation to be possible, it is assumed that the state space and the scenario space are finite – otherwise they have to be discretized.
+% However, even in the discrete case, enumerating all possible combinations is com-
+% putationally intractable for all but very low dimensions, as the number of evaluations
+% suffers from combinatorial explosion. This phenomenon is known as the curse-of-
+% dimensionality of SDP \cite{Powell_solving_Curses_of_Dimensionality}
